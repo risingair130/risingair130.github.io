@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	/* 标签样式初始化 */
+	body{margin:0;padding:0;background:#fff;font-size:14px;font-family:Arial,Helvetica,'STHeiti','Microsoft YaHei','sans-serif'}
+	form,ul,li,p,h1,h2,h3,h4,h5,h6{margin:0;padding:0;}
+	img{border:0;}
+	ul,li{list-style-type:none;}
+	a{color:#00007F;text-decoration:none;}
+	a:hover{text-decoration:none;}
+
+	/* 自定义样式 */
+	.msg_mod{
+		width: 500px;
+		margin: 20px auto;
+	}
+
+	.msg_mod .m_box{
+		width: 100%;
+		padding: 10px;
+		border: 1px #ccc solid;
+		border-radius: 3px;
+		background-color: #f4f4f4;
+		overflow: hidden;
+	}
+	
+	.msg_mod .m_line{
+		margin-top: 10px;
+	}
+
+	.msg_mod .m_line .fl{
+		float: left;
+	}
+
+	.msg_mod .m_line .font{
+		width: 50px;
+	}
+
+	.msg_mod .m_line .input,
+	.msg_mod .m_line .textarea{
+		width: 432px;
+		padding: 0 5px;
+	}
+
+	.msg_mod .m_line .font,
+	.msg_mod .m_line .input{
+		height: 30px;
+		line-height: 30px;
+	}
+
+	.msg_mod .m_line .textarea{
+		height: 120px;
+		padding: 5px;
+		line-height: 15px;
+	}
+
+	.msg_mod .m_line .submit{
+		width: 60px;
+		height: 30px;
+		font-size: 20px;
+		text-align: center;
+		border-radius: 2px;
+		border: 1px #ccc solid;
+		cursor: pointer;
+		float: right;
+	}
+
+	.msg_mod .m_title{
+		/*margin-top: 60px;*/
+		font-size: 20px;
+	}
+
+	.msg_mod .m_cont ul li{
+		padding-top: 15px;
+	}
+
+	.msg_mod .m_cont h3{
+		width: 100%;
+		height: 30px;
+		padding-left: 20px;
+		line-height: 30px;
+		background: #ccc;
+	}
+
+	.msg_mod .m_cont p{
+		width: 100%;
+		height: 30px;
+		padding-left: 20px;
+		line-height: 30px;
+		background: #f4f4f4;
+	}
+
+	.msg_mod .m_cont p a{
+		float: right;
+		margin-right: 20px;
+	}
+	</style>
+</head>
+<body>
+	<!-- 结构 -->
+	<div class="msg_mod">
+		<div class="m_box">
+			<form action="" method="">
+				<div class="m_line">
+					<span class="fl font">姓名:</span>
+					<input type="text" value="" class="input" id="name">
+				</div>
+				<div class="m_line">
+					<span class="fl font">内容:</span>
+					<textarea class="textarea" name="" id="msg"></textarea>
+				</div>
+				<div class="m_line">
+					<input type="button" value="提交" class="submit" id="submit">
+				</div>
+			</form>
+			<!-- 留言提示 -->
+			<div>
+				<h2 class="m_title">留言提示</h2>
+			</div>
+			<div class="m_cont">
+				<ul id="list">
+					<!-- 用来存储动态创建的li -->
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<!-- 行为 -->
+	<script src="tween.js"></script>
+	<script>
+		function message() {
+			// 获取元素
+			var name = document.getElementById("name");
+			var msg = document.getElementById("msg");
+			var submitBtn = document.getElementById("submit");
+			var list = document.getElementById("list");
+
+			var timer = null;
+			var lock = false;
+
+
+			// 为提交按钮添加点击事件
+			submitBtn.onclick = function(){
+				if(lock){
+					return;
+				}
+				lock = true;
+				
+				// 获取用户输入的name input内容
+				var nameVal = name.value;
+				// 获取文本框的值
+				var msgVal = msg.value;
+				// 判断上面的两个值是否为空
+				if (nameVal == "" || msgVal == "") {
+					alert("内容不能为空");
+					return;
+				}else{
+					// 创建li元素对象
+					var li = document.createElement("li");
+
+					// 将nameValue和msgValue添加到li中
+					li.innerHTML = "<h3>" + nameVal + "</h3><p>" + msgVal + "<a href='###'>删除</a></p>";
+
+					// 插入方法,将最新的留言插入到最顶层
+					list.insertBefore(li,list.firstElementChild);
+
+					// 添加之后,书写位置清空.
+					name.value = "";
+					msg.value = "";
+
+					// 调用动画函数
+					animation(li.offsetHeight,0,li); 
+					// 删除元素
+					removeItem(li);	
+				}
+			}
+
+			// 删除的方法
+			function removeItem(item){
+				// 获取到点击的a标签删除元素
+				var removeBtn = item.getElementsByTagName('a');
+				// 为删除元素添加点击事件
+				removeBtn[0].onclick = function(){
+					if(lock){ //如果是上锁状态，返回不向下继续执行
+						return;
+					}
+					lock = true; //每点击成功一次就上锁，在锁被打开之前，不能执行下一次点击事件
+					animation(0,item.offsetHeight,item); //调用动画函数
+				}
+			}
+
+			//动画效果
+			function animation(endNum,bNum,obj) {
+				
+				var end = endNum;
+				var t = 0;
+				var b = bNum;
+				var c = end - b; //目标值减初始值等于变化量
+				var d = 20;
+				
+				timer = setInterval(function (){
+					t++;
+					if (t >= d){
+						if (end == 0) { //判断调用此方法的是不是删除按钮
+							list.removeChild(obj);
+						}
+						clearInterval(timer);
+						lock = false; //一次动画执行完后，打开锁
+					}
+					obj.style.height = Tween.Quad.easeIn(t,b,c,d) + "px";				
+				},30);
+			}
+		}
+		message();
+	</script>
+</body>
+</html>
