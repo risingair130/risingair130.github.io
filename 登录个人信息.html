@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			body{margin:0;padding:0;background:#fff;font-size:14px;font
+			family:Arial,Helvetica,'STHeiti','Microsoft YaHei','sans-serif'}
+			form,ul,li,p,h1,h2,h3,h4,h5,h6{margin:0;padding:0;}
+			img{border:0;}
+			ul,li{list-style-type:none;}
+			a{color:#00007F;text-decoration:none;}
+			a:hover{text-decoration:none;}
+			
+			.top{
+				width: 600px;
+				margin: 100px auto 200px;
+			}
+			.top ul li{
+				float: left;
+				width: 120px;
+				height: 20px;
+			}
+			.top a{
+				width: 40px;
+				height: 22px;
+				line-height: 22px;
+				font-size: 15px;
+				text-align: center;
+				background: red;
+				display: block;
+				float: left;
+				cursor: pointer;
+			}
+			.add{
+				width: 25px;
+				height: 25px;
+				border-radius: 50%;
+				background: yellow;
+				color: blue;
+				position:relative;
+				top: -20px;
+			}
+			.bottom{
+				width: 800px;
+				margin: 100px auto 150px;
+			}
+			.bottom ul{
+				overflow: hidden;
+			}
+			.bottom ul li{
+				float: left;
+				overflow: hidden;
+			}
+			.bottom ul li input{
+				width: 120px;
+				height: 30px;
+				background: #ccc;	
+			}
+			.bottom ul>input{
+				border-radius: 5px;
+				width: 40px;
+				height: 30px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			
+			<div class="top">
+				<ul>
+					<li>姓名</li>
+					<li>qq</li>
+					<li>电话</li>
+					<li>邮箱</li>
+					<button class="add">+</button>
+				</ul>	
+			</div>
+			<div class="bottom"></div>
+		</div>
+		
+	</body>
+	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+	<script>
+		//点击创建录入信息
+		$('.add').click(function(){
+			$(".add").attr("disabled", true); 
+			var newUl_btm = $('<ul><li>姓名<input type="text" value="" /></li><li>qq<input type="text" value="" /></li><li>电话<input type="text" value="" /></li><li>邮箱<input type="text" value="" /></li><input type="submit" value="提交" /></ul>');
+			$('.bottom').append(newUl_btm);
+			$('.bottom ul>input').click(function(){
+				//判断用户输入的信息是否规范
+				var val1 = $('.bottom ul li input').eq(0).val();
+		 		var reg1 = /[\u4E00-\u9FA5]{2,5}/;
+		 		var res1 = reg1.test(val1);
+		 
+				var val2 = $('.bottom ul li input').eq(1).val();
+				var reg2 = /^\d{5,11}$/; 
+				var res2 = reg2.test(val2);
+				
+				var val3 = $('.bottom ul li input').eq(2).val();
+				var reg3 = /^((13|18)(\d{9}))$|^(14[57]\d{8})$|^(17[07]\d{8})$|^(15[0-35-9]\d{8})$/;
+				var res3 = reg3.test(val3);
+					
+				var val4 = $('.bottom ul li input').eq(3).val();
+				var reg4 = /^\w+@\w+\.\w+$/;
+				var res4 = reg4.test(val4);
+				
+				if(!res1){
+					alert('请输入正确的名字');	
+				}
+				else if(!res2){
+					alert('请输入正确的qq号');
+					
+				}
+				else if(!res3){
+					alert('请输入正确的手机号');
+					
+				}
+				else if(!res4){
+					alert('请输入正确的邮箱');
+				}
+				else{
+					$('.add').removeAttr("disabled"); 
+					//创建并插入新信息
+					var newUl_top= $('<ul><li><input type="text" value='+val1+' /></li><li><input type="text" value='+val2+' /></li><li><input type="text" value='+val3+' /></li><li><input type="text" value='+val4+' /></li><a>删除</a></ul>');
+					$('.top').append(newUl_top);
+					//同时删除旧信息
+					newUl_btm.remove();
+					//点击删除键删除此条信息
+					$('a').on('click',function(){
+					$(this).parent().remove();
+				})
+				}
+			})
+		})
+	</script>
+</html>
